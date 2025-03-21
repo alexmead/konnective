@@ -1,10 +1,24 @@
-from fastapi import FastAPI
-import httpx
-from typing import Optional
-from pydantic import BaseModel, Field
+import os
 from enum import Enum
+from typing import Optional
+
+import httpx
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, Field
 
 app = FastAPI()
+
+origins = [
+    "http://localhost:3000",
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 KONNEKTIVE_API_URL = "https://api.konnektive.com"
 
@@ -41,7 +55,7 @@ class OrderParams(BaseModel):
     product1_qty: str
 
 username = "wsapi"
-password = ""
+password = os.getenv("KONNEKTIVE_PASSWORD")
 
 @app.post("/order_v1")
 async def update_order(params: OrderParams):
@@ -81,7 +95,7 @@ async def update_order(params: OrderParams):
         response = await client.post(f"{KONNEKTIVE_API_URL}/landers/clicks/import/", params=query_params)
         return response.json()
 
-@app.post("/click")
+@app.post("/click/")
 async def update_clicks(params: ClickParams):
     async with httpx.AsyncClient() as client:
         if(params.pageType.value == PageType.lead.value):
