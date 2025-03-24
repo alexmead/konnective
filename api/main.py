@@ -34,6 +34,9 @@ class ClickParams(BaseModel):
     requestUri: Optional[str] = Field(default=None)
     campaignId: Optional[str] = Field(default=None)
 
+class GetProductParams(BaseModel):
+    productId: str
+
 class OrderParams(BaseModel):
     firstName: str
     lastName: str
@@ -86,7 +89,6 @@ async def update_order(params: OrderParams):
             "cardSecurityCode": params.cardSecurityCode,
             "campaignId": params.campaignId,
             "product1_id": params.product1_id,
-            "product1_qty": params.product1_qty,
         }
         if params.address2:
             query_params["address2"] = params.address2
@@ -95,17 +97,43 @@ async def update_order(params: OrderParams):
         response = await client.post(f"{KONNEKTIVE_API_URL}/landers/clicks/import/", params=query_params)
         return response.json()
 
-@app.post("/click/")
+@app.post("/click")
 async def update_clicks(params: ClickParams):
     async with httpx.AsyncClient() as client:
+        query_params = {
+            "loginId": username,
+            "password": password,
+            "pageType": params.pageType.value,
+            "sessionId": params.sessionId,
+            "requestUri": params.requestUri,
+            "campaignId": params.campaignId
+        }
         if(params.pageType.value == PageType.lead.value):
-            response = await client.post(f"{KONNEKTIVE_API_URL}/landers/clicks/import/?loginId={username}&password={password}&pageType=leadPage&campaignId={params.campaignId}&requestUri={params.requestUri}")
+            query_params.pop("sessionId")
+            response = await client.post(f"{KONNEKTIVE_API_URL}/landers/clicks/import/", params=query_params)
         else:
-            response = await client.post(f"{KONNEKTIVE_API_URL}/landers/clicks/import/?loginId={username}&password={password}&pageType={params.pageType.value}&sessionId={params.sessionId}")
+            query_params.pop("campaignId")
+            query_params.pop("requestUri")
+            response = await client.post(f"{KONNEKTIVE_API_URL}/landers/clicks/import/", params=query_params) 
         return response.json()
+
+@app.get('/product')
+async def get_product(params: GetProductParams):
+        async with httpx.AsyncClient() as client:
+            query_params = {
+                "loginId": username,
+                "password": password,
+                "productId": params.productId
+            }
+            response = await client.get(f"{KONNEKTIVE_API_URL}/product/query/", params=query_params)
+            return response.json()
 
 @app.get('/products')
 async def get_products():
     async with httpx.AsyncClient() as client:
-        response = await client.get(f"{KONNEKTIVE_API_URL}/product/query/?loginId={username}&password={password}")
+        query_params = {
+            "loginId": username,
+            "password": password
+        }
+        response = await client.get(f"{KONNEKTIVE_API_URL}/product/query/", params=query_params)
         return response.json()
