@@ -34,9 +34,6 @@ class ClickParams(BaseModel):
     requestUri: Optional[str] = Field(default=None)
     campaignId: Optional[str] = Field(default=None)
 
-class GetProductParams(BaseModel):
-    productId: str
-
 class OrderParams(BaseModel):
     firstName: str
     lastName: str
@@ -117,18 +114,18 @@ async def update_clicks(params: ClickParams):
             response = await client.post(f"{KONNEKTIVE_API_URL}/landers/clicks/import/", params=query_params) 
         return response.json()
 
-@app.get('/product')
-async def get_product(params: GetProductParams):
+@app.get("/product/{productId}")
+async def get_product(productId: str):
         async with httpx.AsyncClient() as client:
             query_params = {
                 "loginId": username,
                 "password": password,
-                "productId": params.productId
+                "productId": productId
             }
             response = await client.get(f"{KONNEKTIVE_API_URL}/product/query/", params=query_params)
             return response.json()
 
-@app.get('/products')
+@app.get("/products")
 async def get_products():
     async with httpx.AsyncClient() as client:
         query_params = {
