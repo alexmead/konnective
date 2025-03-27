@@ -38,7 +38,7 @@ class OrderParams(BaseModel):
     firstName: str
     lastName: str
     address1: str
-    address2: Optional[str]
+    address2: Optional[str] = Field(default=None)
     postalCode: str
     city: str
     state: str
@@ -91,7 +91,7 @@ async def update_order(params: OrderParams):
             query_params["address2"] = params.address2
             query_params["shipAddress2"] = params.address2
 
-        response = await client.post(f"{KONNEKTIVE_API_URL}/landers/clicks/import/", params=query_params)
+        response = await client.post(f"{KONNEKTIVE_API_URL}/order/import/", params=query_params)
         return response.json()
 
 @app.post("/click")
@@ -111,7 +111,7 @@ async def update_clicks(params: ClickParams):
         else:
             query_params.pop("campaignId")
             query_params.pop("requestUri")
-            response = await client.post(f"{KONNEKTIVE_API_URL}/landers/clicks/import/", params=query_params) 
+            response = await client.post(f"{KONNEKTIVE_API_URL}/landers/clicks/import/", params=query_params)
         return response.json()
 
 @app.get("/product/{productId}")
