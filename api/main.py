@@ -43,6 +43,14 @@ class OrderParams(BaseModel):
     city: str
     state: str
     country: str
+    altFirstName: Optional[str] = Field(default=None)
+    altLastName: Optional[str] = Field(default=None)
+    altAddress1: Optional[str] = Field(default=None)
+    altAddress2: Optional[str] = Field(default=None)
+    altPostalCode: Optional[str] = Field(default=None)
+    altCity: Optional[str] = Field(default=None)
+    altState: Optional[str] = Field(default=None)
+    altCountry: Optional[str] = Field(default=None)
     emailAddress: str
     phoneNumber: str
     paySource: str
@@ -63,13 +71,13 @@ async def update_order(params: OrderParams):
         query_params = {
             "loginId": username,
             "password": password,
-            "firstName": params.firstName,
-            "lastName": params.lastName,
-            "address1": params.address1,
-            "postalCode": params.postalCode,
-            "city": params.city,
-            "state": params.state,
-            "country": params.country,
+            "firstName": params.altFirstName if params.altFirstName else params.firstName,
+            "lastName": params.altLastName if params.altLastName else params.lastName,
+            "address1": params.altAddress1 if params.altAddress1 else params.address1,
+            "postalCode": params.altPostalCode if params.altPostalCode else params.postalCode,
+            "city": params.altCity if params.altCity else params.city,
+            "state": params.altState if params.altState else params.state,
+            "country": params.altCountry if params.altCountry else params.country,
             "emailAddress": params.emailAddress,
             "phoneNumber": params.phoneNumber,
             "shipFirstName": params.firstName,
@@ -87,7 +95,10 @@ async def update_order(params: OrderParams):
             "campaignId": params.campaignId,
             "product1_id": params.product1_id,
         }
-        if params.address2:
+        if params.altAddress2:
+            query_params["address2"] = params.altAddress2
+            query_params["shipAddress2"] = params.address2
+        else: 
             query_params["address2"] = params.address2
             query_params["shipAddress2"] = params.address2
 
