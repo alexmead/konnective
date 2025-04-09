@@ -34,6 +34,15 @@ class ClickParams(BaseModel):
     requestUri: Optional[str] = Field(default=None)
     campaignId: Optional[str] = Field(default=None)
 
+class LeadParams(BaseModel):
+    campaignId: str
+    orderId: str
+    payerId: str
+    paypalBillerId: str
+    product1_id: str
+    sessionId: str
+    token: str
+
 class OrderParams(BaseModel):
     firstName: str
     lastName: str
@@ -123,6 +132,23 @@ async def update_clicks(params: ClickParams):
             query_params.pop("campaignId")
             query_params.pop("requestUri")
             response = await client.post(f"{KONNEKTIVE_API_URL}/landers/clicks/import/", params=query_params)
+        return response.json()
+
+@app.post("/lead")
+async def update_lead(params: LeadParams):
+    async with httpx.AsyncClient() as client:
+        query_params = {
+            "loginId": username,
+            "password": password,
+            "campaignId": params.campaignId,
+            "orderId": params.orderId,
+            "payerId": params.payerId,
+            "paypalBillerId": params.paypalBillerId,
+            "product1_id": params.product1_id,
+            "sessionId": params.sessionId,
+            "token": params.token
+        }
+        response = await client.post(f"{KONNEKTIVE_API_URL}/lead/import/", params=query_params)
         return response.json()
 
 @app.get("/product/{productId}")
