@@ -22,17 +22,11 @@ app.add_middleware(
 
 KONNEKTIVE_API_URL = "https://api.konnektive.com"
 
-class PageType(Enum):
-    lead = "leadPage"
-    checkout = "checkoutPage"
-    upsell = "upsellPage"
-    thankYou = "thankYouPage"
-
 class ClickParams(BaseModel):
-    pageType: PageType
+    pageType: str
+    campaignId: Optional[str] = Field(default=None)
     sessionId: Optional[str] = Field(default=None)
     requestUri: Optional[str] = Field(default=None)
-    campaignId: Optional[str] = Field(default=None)
 
 class LeadParams(BaseModel):
     campaignId: str
