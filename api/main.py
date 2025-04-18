@@ -1,4 +1,5 @@
 import os
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Optional
 
@@ -165,3 +166,12 @@ async def get_products():
         }
         response = await client.get(f"{KONNEKTIVE_API_URL}/product/query/", params=query_params)
         return response.json()
+
+@app.get("/health")
+async def get_health():
+    return {
+        "status": "ok",
+        "service": "Konnektive Wrapper API",
+        "version": "1.0.0",
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    }
