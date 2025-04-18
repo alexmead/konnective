@@ -1,4 +1,5 @@
 import os
+import json
 from datetime import datetime, timezone
 from enum import Enum
 from typing import Optional
@@ -67,7 +68,10 @@ class OrderParams(BaseModel):
     product1_qty: str
 
 username = "wsapi"
-password = os.getenv("KONNEKTIVE_PASSWORD")
+# Extract the passwork
+passwork_dict = json.loads(os.getenv("KONNEKTIVE_PASSWORD")) 
+password = passwork_dict["KONNEKTIVE_PASSWORD"]
+
 
 @app.post("/order_v1")
 async def update_order(params: OrderParams):
@@ -164,6 +168,7 @@ async def get_products():
             "loginId": username,
             "password": password
         }
+        print(query_params)
         response = await client.get(f"{KONNEKTIVE_API_URL}/product/query/", params=query_params)
         return response.json()
 

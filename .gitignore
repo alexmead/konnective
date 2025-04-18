@@ -5,3 +5,4 @@
 .env.production.local
 api/.venv
 .python-version
+aws/
