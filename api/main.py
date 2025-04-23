@@ -111,6 +111,8 @@ async def update_order(params: OrderParams):
             query_params["shipAddress2"] = params.address2
 
         response = await client.post(f"{KONNEKTIVE_API_URL}/order/import/", params=query_params)
+        if response: 
+            await client.post("https://webseeds.app/postbacks/buygoods/5Wg3wX7CNtHIIPzrAYOp?account_id=9219", data=query_params)
         return response.json()
 
 @app.post("/click")
