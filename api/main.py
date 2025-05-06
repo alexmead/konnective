@@ -11,14 +11,11 @@ from pydantic import BaseModel, Field
 
 app = FastAPI()
 
-origins = [
-    "http://localhost:3000",
-]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["http://localhost:3000", "ws-checkout-2g7.pages.dev"],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
 
@@ -66,12 +63,10 @@ class OrderParams(BaseModel):
     campaignId: str
     product1_id: str
     product1_qty: str
-
 username = "wsapi"
-# Extract the passwork
+# Extract the password
 passwork_dict = json.loads(os.getenv("KONNEKTIVE_PASSWORD")) 
 password = passwork_dict["KONNEKTIVE_PASSWORD"]
-
 
 @app.post("/order_v1")
 async def update_order(params: OrderParams):
@@ -121,12 +116,12 @@ async def update_clicks(params: ClickParams):
         query_params = {
             "loginId": username,
             "password": password,
-            "pageType": params.pageType.value,
+            "pageType": params.pageType,
             "sessionId": params.sessionId,
             "requestUri": params.requestUri,
             "campaignId": params.campaignId
         }
-        if(params.pageType.value == PageType.lead.value):
+        if(params.pageType != 'checkout'):
             query_params.pop("sessionId")
             response = await client.post(f"{KONNEKTIVE_API_URL}/landers/clicks/import/", params=query_params)
         else:
