@@ -295,10 +295,10 @@ Resources:
     Properties:
       ContainerDefinitions:
          - Name: fastapi-container
-           Image: 189187172192.dkr.ecr.us-east-2.amazonaws.com/fastapi-app-86:latest
+           Image: 989775483848.dkr.ecr.us-east-2.amazonaws.com/fastapi-app-86:latest
            Secrets:
              - Name: KONNEKTIVE_PASSWORD
-               ValueFrom: !Sub arn:aws:secretsmanager:us-east-2:189187172192:secret:konnektive_api_password-ak2pSL
+               ValueFrom: !Sub arn:aws:secretsmanager:us-east-2:989775483848:secret:konnective_api_password-cFWxNK
            PortMappings:
              - ContainerPort: 8000
            LogConfiguration:
@@ -354,7 +354,7 @@ Resources:
               - Effect: Allow
                 Action:
                   - secretsmanager:GetSecretValue
-                Resource: arn:aws:secretsmanager:us-east-2:189187172192:secret:konnektive_api_password-ak2pSL
+                Resource: arn:aws:secretsmanager:us-east-2:989775483848:secret:konnective_api_password-cFWxNK
   PrivateIntegrationsTutorialServiceTaskDefExecutionRoleDefaultPolicy0F96072D:
     Type: 'AWS::IAM::Policy'
     Properties:
@@ -364,9 +364,10 @@ Resources:
           - Effect: Allow
             Action:
               - logs:CreateLogStream
+              - logs:CreateLogGroup
               - logs:PutLogEvents
             Resource:
-              - arn:aws:logs:us-east-2:189187172192:log-group:/ecs/fastapi-app-86:*
+              - arn:aws:logs:us-east-2:989775483848:log-group:/ecs/fastapi-app-86:*
       PolicyName: PrivateIntegrationsTutorialServiceTaskDefExecutionRoleDefaultPolicy0F96072D
       Roles:
         - !Ref PrivateIntegrationsTutorialServiceTaskDefExecutionRoleC7103AEA
@@ -434,3 +435,4 @@ Outputs:
         - !GetAtt 
           - PrivateIntegrationsTutorialServiceLB8E9ECEA5
           - DNSName
+
